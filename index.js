@@ -1,17 +1,34 @@
-const M = 1;
-const N = 1000;
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+const http = require('http');
 
-function isPrime(num) {
-  for (let i = 2, sqrt = Math.sqrt(num); i <= sqrt; i++) {
-    if (num % i === 0) {
-      return false;
+http
+    .createServer((request, response) => {
+        response.setHeader("Content-Type", "text/html; charset=utf-8;");
+        if (request.url === '/'){
+            response.write('Данные получены');
+            handleData();
+        } else{
+            response.write('Данных нет');
+            console.log("No data!");
+        }
+        response.end();
+
+}).listen(3000);
+
+
+async function handleData(){
+    try{
+        const {data} = await axios.get('https://jsonplaceholder.typicode.com/posts');
+
+        fs.writeFile(path.resolve(__dirname, '1.json'), JSON.stringify(data), 'utf-8', (err) => {
+            if(err){
+                throw err;
+            }
+            console.log("Done!");
+        })
+    } catch (error) {
+        console.error(error);
     }
-  }
-  return num > 1;
-}
-
-for (let i = M; i <= N; i++) {
-  if (isPrime(i)) {
-    console.log(i);
-  }
-}
+};
