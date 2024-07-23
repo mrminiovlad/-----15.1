@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "name": "myapp",
   "version": "1.0.0",
   "description": "",
@@ -10,23 +9,9 @@
   "author": "Vlad Morozov",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2",
-    "mysql2": "^3.9.7",
-    "sequelize": "^6.37.3"
+    "express": "^4.19.2"
   },
-  "type": "module"
-=======
-    "name": "console_test",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-    "axios": "^1.7.2"
-    }
->>>>>>> origin/main
+  
+    "type": "module"
+  
 }

@@ -1,88 +1,71 @@
-import express from "express";
+import express from "express"
 const app = express();
 const port = 3000;
 
-import { Task } from './task.model.js';
 
 app.use(express.json());
 
 
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ message: 'Internal server error' });
+let tasks = [];
+
+
+app.get('/tasks', (req, res) => {
+    res.json(tasks);
 });
 
-app.get('/tasks', async (req, res, next) => {
-    try {
-        const tasks = await Task.findAll();
-        res.json(tasks);
-    } catch (error) {
-        next(error);
-    }
-});
 
-app.get('/tasks/:id', async (req, res, next) => {
-    try {
-        const taskId = parseInt(req.params.id);
-        const task = await Task.findByPk(taskId);
+app.get('/tasks/:id', (req, res) => {
+    const taskId = parseInt(req.params.id);
+    const task = tasks.find(t => t.id === taskId);
 
     if (!task) {
         return res.status(404).json({ message: 'Task not found' });
     }
 
     res.json(task);
-    } catch (error) {
-        next(error);
-    }
 });
 
-app.post('/tasks', async (req, res, next) => {
-    try {
-    const newTask = await Task.create({
+
+app.post('/tasks', (req, res) => {
+    const newTask = {
+        id: Date.now(),
         title: req.body.title,
         description: req.body.description,
-    });
+    };
 
-    res.status(201).json(newTask);
-    } catch (error) {
-        next(error);
-    }
+    tasks.push(newTask);
+    res.status(201).json(newTask); 
 });
 
-app.put('/tasks/:id', async (req, res, next) => {
-    try {
-        const taskId = parseInt(req.params.id);
-        const task = await Task.findByPk(taskId);
 
-    if (!task) {
+app.put('/tasks/:id', (req, res) => {
+    const taskId = parseInt(req.params.id);
+    const taskIndex = tasks.findIndex(t => t.id === taskId);
+
+    if (taskIndex === -1) {
+    
         return res.status(404).json({ message: 'Task not found' });
     }
 
-    await task.update({
+    tasks[taskIndex] = {
+        id: taskId,
         title: req.body.title,
         description: req.body.description,
-    });
+    };
 
-    res.json(task);
-    } catch (error) {
-        next(error);
-    }
+    res.json(tasks[taskIndex]);
 });
 
-app.delete('/tasks/:id', async (req, res, next) => {
-    try {
-        const taskId = parseInt(req.params.id);
-        const task = await Task.findByPk(taskId);
+app.delete('/tasks/:id', (req, res) => {
+    const taskId = parseInt(req.params.id);
+    const taskIndex = tasks.findIndex(t => t.id === taskId);
 
-    if (!task) {
+    if (taskIndex === -1) {
         return res.status(404).json({ message: 'Task not found' });
     }
 
-        await task.destroy();
-        res.json({ message: 'Task deleted' });
-    } catch (error) {
-        next(error);
-    }
+    tasks.splice(taskIndex, 1);
+    res.json({ message: 'Task deleted' });
 });
 
 app.listen(port, () => {
